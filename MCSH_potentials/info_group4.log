@@ -1,0 +1,4 @@
+atom:Si	type:pseudodensity_dense	ngaussian:5	mse:6001866797087.172	integration:3.961852908842369
+atom:P	type:pseudodensity_dense	ngaussian:5	mse:4.1275311890463864e+20	integration:4.988092841718952
+atom:S	type:pseudodensity_dense	ngaussian:5	mse:1.0769103891776813e+20	integration:6.002501960056691
+atom:Cl	type:pseudodensity_dense	ngaussian:5	mse:1.4833554919290605e+20	integration:7.010398048988751

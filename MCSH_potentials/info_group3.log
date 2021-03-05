@@ -1,0 +1,5 @@
+atom:Na	type:pseudodensity_dense	ngaussian:4	mse:1.923298478439097e+16	integration:8.881568804787609
+atom:Mg	type:pseudodensity_dense	ngaussian:4	mse:2.1859582639078828e+16	integration:9.955451501608001
+atom:Al	type:pseudodensity_dense	ngaussian:4	mse:3.336809348756271e+34	integration:10.941175172600197
+atom:Al	type:pseudodensity_dense	ngaussian:2	mse:3.957356800240851e+28	integration:10.941412752770622
+atom:Al	type:pseudodensity_dense	ngaussian:3	mse:3.2581724070441315e+42	integration:10.950001433491707

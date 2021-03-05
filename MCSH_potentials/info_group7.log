@@ -1,0 +1,9 @@
+atom:Rb	type:pseudodensity_dense	ngaussian:5	mse:3.1484640380938886e+26	integration:8.711036874890851
+atom:Sr	type:pseudodensity_dense	ngaussian:5	mse:3.917507130823566e+26	integration:9.73811079794541
+atom:Y	type:pseudodensity_dense	ngaussian:5	mse:5.7975051787592034e+26	integration:10.81196533828188
+atom:Zr	type:pseudodensity_dense	ngaussian:4	mse:9.161618654161563e+19	integration:11.871291322109741
+atom:Nb	type:pseudodensity_dense	ngaussian:4	mse:1.8951682534349522e+23	integration:12.91059016221675
+atom:Mo	type:pseudodensity_dense	ngaussian:4	mse:2.8532292512121127e+23	integration:13.938211700337263
+atom:Tc	type:pseudodensity_dense	ngaussian:4	mse:2.914282894854772e+23	integration:14.957715572105144
+atom:Ru	type:pseudodensity_dense	ngaussian:4	mse:2.8971907583904933e+23	integration:15.972301150084093
+atom:Rh	type:pseudodensity_dense	ngaussian:4	mse:3.810750028204715e+23	integration:16.983757559133096

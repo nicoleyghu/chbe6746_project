@@ -1,0 +1,5 @@
+atom:Ga	type:pseudodensity_dense	ngaussian:5	mse:5.862626266342815e+24	integration:12.949521996023918
+atom:Ge	type:pseudodensity_dense	ngaussian:5	mse:1.1924359849967935e+25	integration:13.975344452051331
+atom:As	type:pseudodensity_dense	ngaussian:5	mse:1.7717422937939008e+25	integration:4.977519722102443
+atom:Se	type:pseudodensity_dense	ngaussian:5	mse:1.4573991014182127e+26	integration:5.994704280936276
+atom:Br	type:pseudodensity_dense	ngaussian:5	mse:1.0467572523687674e+26	integration:7.005010799839511

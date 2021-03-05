@@ -1,0 +1,12 @@
+atom:K	type:pseudodensity_dense	ngaussian:4	mse:315165521530818.4	integration:8.752627649249124
+atom:Ca	type:pseudodensity_dense	ngaussian:4	mse:2.858852982009723e+18	integration:9.815599479350109
+atom:Sc	type:pseudodensity_dense	ngaussian:5	mse:2.3777008037756412e+16	integration:10.87526382217296
+atom:Ti	type:pseudodensity_dense	ngaussian:5	mse:3.726728836952151e+19	integration:11.91494474914304
+atom:V	type:pseudodensity_dense	ngaussian:4	mse:8.814374649337056e+21	integration:12.941262842427378
+atom:Cr	type:pseudodensity_dense	ngaussian:4	mse:6.849079080197883e+21	integration:13.96137777707095
+atom:Mn	type:pseudodensity_dense	ngaussian:4	mse:8.207891268431484e+23	integration:14.97596584324782
+atom:Fe	type:pseudodensity_dense	ngaussian:4	mse:7.819806205700857e+23	integration:15.987211699803055
+atom:Co	type:pseudodensity_dense	ngaussian:4	mse:9.719258244966964e+23	integration:16.99739249049111
+atom:Ni	type:pseudodensity_dense	ngaussian:4	mse:9.956448502596005e+23	integration:18.00549886237991
+atom:Cu	type:pseudodensity_dense	ngaussian:4	mse:1.0843033865794744e+24	integration:19.010072135490518
+atom:Zn	type:pseudodensity_dense	ngaussian:4	mse:1.8984473872015508e+24	integration:20.017807539837115
