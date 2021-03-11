@@ -8,8 +8,8 @@ N. Hu 2021/03/05
    
    Create a folder for the cloned package under root directory (or a specified directory): `mkdir ~/amptorch_MCSH_paper1; cd ~/amptorch_MCSH_paper1`
 
-   Git clone the package with specific branch:`git clone https://github.com/nicoleyghu/amptorch.git MCSH_paper1`
-2. Navigate into the cloned folder and install the package following the instructions for AMPtorch installation as stated in `README.md`. 
+   Git clone the package with specific branch:`git clone --branch MCSH_paper1 https://github.com/nicoleyghu/amptorch.git`
+2. Navigate into the cloned folder by `cd amptorch` and install the package following the instructions for AMPtorch installation as stated in `README.md`. 
    
    Update Conda: `conda update conda`
 
