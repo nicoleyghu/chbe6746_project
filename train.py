@@ -28,10 +28,10 @@ MCSHs = {
 
 elements = ["H", "O"]
 config = {
-    "model": {"get_forces": False, "num_layers": 3, "num_nodes": 20},
+    "model": {"get_forces": True, "num_layers": 3, "num_nodes": 20},
     "optim": {
         "device": "cpu",
-        "force_coefficient": 0.0,
+        "force_coefficient": 0.2,
         "lr": 1e-3,
         "batch_size": 8,
         "epochs": 500,
