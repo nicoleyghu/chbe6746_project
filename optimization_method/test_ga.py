@@ -4,6 +4,8 @@ from ase.io import read
 from amptorch.trainer import AtomsTrainer
 from amptorch.ase_utils import AMPtorch
 from ase.build import molecule
+import os
+import csv
 
 from read_model import load_trainer, calculate_energy
 
@@ -12,7 +14,7 @@ np.random.seed(0)
 random.seed(0)
 
 class genetic_algorithm():
-    def __init__(self, trainer, num_children, num_vars, bounds=None, num_generations=2, num_best_parents=2, cross_point=0.5, prob_mutation=0.1, verbose=False):
+    def __init__(self, trainer, num_children, num_vars, bounds=None, num_generations=2, num_best_parents=4, cross_point=0.5, prob_mutation=0.1, verbose=False, log=False):
         self.population_size = (num_children, num_vars)
         self.trainer = trainer
         self.parents = None
@@ -21,6 +23,7 @@ class genetic_algorithm():
         self.num_best_parents = num_best_parents
         self.prob_mutation = prob_mutation
         self.verbose = verbose
+        self.log = log
         # initial round of population
         self.calculate_population()
     
@@ -31,7 +34,7 @@ class genetic_algorithm():
             self.rank_population(self.num_best_parents)
             self.crossover()
             self.mutation(self.prob_mutation)
-            self.report(verbose=self.verbose)
+            self.report(verbose=self.verbose, log=self.log)
         return self.report_best_parent, self.report_best_score
 
     def calculate_population(self):
@@ -85,12 +88,15 @@ class genetic_algorithm():
         scores = -np.asarray(scores)
         return scores
     
-    def report(self, verbose):
+    def report(self, verbose, log):
         self.report_best_parent = self.best_parents[0]
         self.report_best_score = self.calculate_fitness(self.best_parents)[0]
         if verbose is True: 
             print("Best parent: {}".format(self.report_best_parent))
             print("Best parent score: {}".format(self.report_best_score))
+        if log is True:
+            message = self.report_best_parent
+            self.write_log(message)
 
     def _get_low_high(self):
         lows = []
@@ -114,6 +120,18 @@ class genetic_algorithm():
             image.center()
             images.append(image)
         return images
+    
+    def write_log(self, message):
+        filename = "./ga_log.csv"
+        if os.path.exists(filename) is False:
+            with open(filename, "w", newline="") as f:
+                writer = csv.writer(f, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                writer.writerow(message)
+        else:
+            with open(filename, "a", newline="") as f:
+                writer = csv.writer(f, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                writer.writerow(message)
+
 
 checkpoint_path = "../checkpoints/2021-03-28-21-51-55-test"
 trainer = load_trainer(checkpoint_path)
@@ -121,17 +139,20 @@ trainer = load_trainer(checkpoint_path)
 bounds = [(0.95, 1.8), (100, 180)]
 
 
-# create an ensemble of ga solvers to get the average solution
+# create an ensemble of ga solvers to get the average and std of solution
 sols = []
 scores = []
 for ensemble in range(20):
-    ga = genetic_algorithm(trainer, 128, 2, bounds=bounds, num_generations=10)
+    ga = genetic_algorithm(trainer, 8, 2, bounds=bounds, num_generations=10, log=False)
     sol, score = ga.run()
     sols.append(sol)
     scores.append(score)
+    # break
 
 ensemble_sol = np.mean(np.asarray(sols), axis=0)
+ensemble_sol_std = np.std(np.asarray(sols), axis=0)
 print(ensemble_sol)
+print(ensemble_sol_std)
 
 # build molecule
 OH_bond_length = ensemble_sol[0] 
@@ -142,4 +163,4 @@ image.set_angle(1, 0, 2, bond_angle)
 image.set_cell([10, 10, 10])
 image.center()
 
-print(trainer.predict([image])["energy"])
+print(trainer.predict([image])["energy"][0])
