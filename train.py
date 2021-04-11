@@ -5,7 +5,7 @@ from amptorch.ase_utils import AMPtorch
 
 from ase.visualize import view
 
-images = read("./data/water.traj", index=":")
+images = read("./data/water_dft.traj", index=":")
 
 sigmas = np.logspace(np.log10(0.02), np.log10(1.0), num=5)
 MCSHs = {
@@ -40,7 +40,7 @@ config = {
         "raw_data": images,
         # "val_split": 0.1,
         "elements": elements,
-        "fp_scheme": "mcsh",
+        "fp_scheme": "gmp",
         "fp_params": MCSHs,
         "save_fps": True,
     },
