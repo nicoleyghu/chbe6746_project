@@ -38,10 +38,11 @@ def load_training_data(train_filename, test_filename):
     return training_list, test_list
 
 def module_evaluate(learning_rate, num_nodes, num_layers):
+
     input_filename = "../data/water_dft.traj"
 
     # split input if there's no split
-    if (os.path.exists("../data/rain.traj") is False) or (os.path.exists("../test.traj") is False):
+    if (os.path.exists("../data/train.traj") is False) or (os.path.exists("../data/test.traj") is False):
         print("Creating train_test split. ")
         train_ratio = 0.9
         training_list, test_list = split_train_test(input_filename, train_ratio, save=True, filenames=["../data/train.traj", "../data/test.traj"])
@@ -76,7 +77,7 @@ def module_evaluate(learning_rate, num_nodes, num_layers):
             "force_coefficient": 0.2,
             "lr": learning_rate,
             "batch_size": 8,
-            "epochs": 500,
+            "epochs": 200,
         },
         "dataset": {
             "raw_data": training_list,

@@ -5,6 +5,7 @@ from amptorch.trainer import AtomsTrainer
 from amptorch.ase_utils import AMPtorch
 from ase.build import molecule
 import os
+import shutil
 import csv
 
 from evaluate import module_evaluate
@@ -14,17 +15,17 @@ np.random.seed(0)
 random.seed(0)
 
 class genetic_algorithm():
-    def __init__(self, objective, space, num_generations=2, num_best_parents=4, cross_point=0.5, prob_mutation=0.1, verbose=False, log=False):
+    def __init__(self, space, num_generations=2, num_init_population=4, num_best_parents=4, prob_mutation=0.1, verbose=False, log=False):
         self.space = space
-        self.objective = objective
-        self.parents = None
+        self.best_parents = None
         self.num_generations = num_generations
         self.num_best_parents = num_best_parents
         self.prob_mutation = prob_mutation
+        self.num_init_population = num_init_population
         self.verbose = verbose
         self.log = log
         # initial round of population
-        self.calculate_population()
+        self.calculate_population(num_init_population)
     
     def run(self):
         for gen in range(self.num_generations):
@@ -36,55 +37,60 @@ class genetic_algorithm():
             self.report(verbose=self.verbose, log=self.log)
         return self.report_best_parent, self.report_best_score
 
-    def calculate_population(self):
+    def calculate_population(self, num_init_population):
+        sorted_keys = sorted(self.space.keys())
+        self.sorted_keys = sorted_keys
+        _result_list = np.zeros((num_init_population, len(sorted_keys)))
+        _result_list = [[] for _ in range(num_init_population)]
+        for i, _key in enumerate(sorted_keys):
+            search_space = self.space[_key]
+            _rand_gen = np.random.randint(0, high=len(search_space), size=num_init_population)
+            _masked_space = [search_space[_] for _ in _rand_gen]
+            for j, _ in enumerate(_result_list):
+                _.append(_masked_space[j])        
+        self.best_parents = _result_list
+        # self.best_parents = self._mat2listDict(sorted_keys, _result_mat)
         # initialization step
-        if self.parents is None:
-            if self.bounds is not None: 
-                self._get_low_high()
-                num_children, num_vars = self.population_size
-                self.new_population = [np.random.uniform(low=self.lows[_], high=self.highs[_], size=num_children) for _ in range(num_vars)]
-                self.new_population = np.asarray(self.new_population).transpose()
-            else:
-                self.new_population = np.random.uniform(low=0, high=1, size=self.population_size)
-        # crossover and mutate
-        # else:
     
     def rank_population(self, num_best_parents):
-        scores = self.calculate_fitness(self.new_population)
-        scores, populations = zip(*sorted(zip(scores, self.new_population), reverse=True,key=lambda x: x[0]))
+        scores = self.calculate_fitness(self.best_parents)
+        scores, populations = zip(*sorted(zip(scores, self.best_parents), reverse=True,key=lambda x: x[0]))
         # select best parents
-        self.best_parents = populations[0:num_best_parents]
-        self.best_parents = np.asarray(self.best_parents)
+        self.best_parents = [populations[_] for _ in range(num_best_parents)]
     
-    def crossover(self, num_crossover=2):
-        _, num_vars = self.population_size
+    def crossover(self, num_crossover_children=4):
         parents = self.best_parents
-
-        if num_vars <= 2:
-            crosspoint = 0
-            for i in range(num_crossover+1):
-                mated = [[parents[i][0],  parents[i+1][1]], [parents[i+1][0],  parents[i][1]]]
-                parents = np.vstack((parents, np.array(mated)))
-            self.best_parents = parents
-        else:
-            cross_point = random.randint(0, num_vars)
-            raise NotImplementedError()
+        children = []
+        for i in range(num_crossover_children):
+            child =[]
+            for j, _key in enumerate(self.sorted_keys):
+                parent_col = [_[j] for _ in parents]
+                parent_select = np.random.randint(0, len(parent_col))
+                child.append(parent_col[parent_select])
+            children.append(child)
+        self.best_parents.extend(children)
+        
     
     def mutation(self, prob_mutation):
-        _, num_vars = self.population_size
         parents = self.best_parents
-        shape = parents.shape
-        mute = np.random.rand()
-        if mute < prob_mutation:
-            row = random.randint(0, shape[0]-1)
-            col = random.randint(0, shape[1]-1)
-            parents[row, col] = np.random.uniform(low=self.lows[col], high=self.highs[col])
-        self.new_population = parents 
+        for parent in parents:
+            for j, _key in enumerate(self.sorted_keys):
+                mute = np.random.rand()
+                if mute < prob_mutation:
+                    search_space = self.space[_key]
+                    _rand_gen = np.random.randint(0, high=len(search_space))
+                    parent[j] = search_space[_rand_gen]
+        self.best_parents = parents 
 
     def calculate_fitness(self, population):
-        images = self._get_images(self.new_population)
-        scores = trainer.predict(images)["energy"]
-        scores = -np.asarray(scores)
+        input_listDict = self._mat2listDict(self.sorted_keys, population)
+        scores = []
+        for _parent in input_listDict:
+            learning_rate = float(_parent["learning_rate"])
+            num_nodes = int(_parent["num_nodes"])
+            num_layers = int(_parent["num_layers"])
+            fitness = -module_evaluate(learning_rate, num_nodes, num_layers)
+            scores.append(fitness)
         return scores
     
     def report(self, verbose, log):
@@ -94,18 +100,18 @@ class genetic_algorithm():
             print("Best parent: {}".format(self.report_best_parent))
             print("Best parent score: {}".format(self.report_best_score))
         if log is True:
-            message = self.report_best_parent
+            message = [_ for _ in self.report_best_parent]
+            message.extend([-self.report_best_score])
             self.write_log(message)
-
-    def _get_low_high(self):
-        lows = []
-        highs = []
-        for bound in self.bounds:
-            low, high = bound
-            lows.append(low)
-            highs.append(high)
-        self.lows = lows
-        self.highs = highs
+    
+    def _mat2listDict(self, keys, mat):
+        _list = []
+        for _row in mat:
+            _tmpdict = {}
+            for i_key, j in enumerate(_row):
+                _tmpdict[keys[i_key]] = j
+            _list.append(_tmpdict)
+        return _list
 
     def _get_images(self, x0s):
         images = []
@@ -132,28 +138,15 @@ class genetic_algorithm():
                 writer.writerow(message)
 
 
+os.remove("./ga_log.csv")
+
+space = {"learning_rate": np.logspace(-4, 0, num=10),
+    "num_nodes": np.linspace(10, 50, 5, dtype=int), 
+    "num_layers": np.linspace(2, 10, 4, dtype=int), 
+}
+
 # create an ensemble of ga solvers to get the average and std of solution
-sols = []
-scores = []
-for ensemble in range(20):
-    ga = genetic_algorithm(trainer, 8, 2, bounds=bounds, num_generations=10, log=False)
-    sol, score = ga.run()
-    sols.append(sol)
-    scores.append(score)
-    # break
+ga = genetic_algorithm(space, verbose=True, log=True)
+ga.run()
 
-ensemble_sol = np.mean(np.asarray(sols), axis=0)
-ensemble_sol_std = np.std(np.asarray(sols), axis=0)
-print(ensemble_sol)
-print(ensemble_sol_std)
-
-# build molecule
-OH_bond_length = ensemble_sol[0] 
-bond_angle = ensemble_sol[1]
-image = molecule('H2O')
-image.set_distance(0, 2, OH_bond_length, fix=0)
-image.set_angle(1, 0, 2, bond_angle)
-image.set_cell([10, 10, 10])
-image.center()
-
-print(trainer.predict([image])["energy"][0])
+shutil.rmtree("./checkpoints")
