@@ -39,6 +39,10 @@ def load_training_data(train_filename, test_filename):
 
 def module_evaluate(learning_rate, num_nodes, num_layers):
 
+    learning_rate = float(learning_rate)
+    num_nodes = int(num_nodes)
+    num_layers = int(num_layers)
+
     input_filename = "../data/water_dft.traj"
 
     # split input if there's no split
@@ -92,7 +96,7 @@ def module_evaluate(learning_rate, num_nodes, num_layers):
             "run_dir": "./",
             "seed": 1,
             "identifier": "test",
-            "verbose": True,
+            "verbose": False,
             "logger": False,
         },
     }
