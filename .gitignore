@@ -1,6 +1,11 @@
 #python
 __pycache__/
 *.pyc
+*.csv
+*.txt
 
 **/processed/
 **/.ipynb_checkpoints/
+**/figures/
+
+**/optimization_method/*.png
