@@ -10,6 +10,7 @@ import csv
 import pickle
 import pandas as pd
 import copy
+from statistics import mode
 
 from evaluate import module_evaluate
 
@@ -83,6 +84,7 @@ class genetic_algorithm():
     def crossover(self, num_crossover_children=4):
         parents = self.best_parents
         children = []
+        # direct cross over
         for i in range(num_crossover_children):
             child =[]
             for j, _key in enumerate(self.sorted_keys):
@@ -90,12 +92,22 @@ class genetic_algorithm():
                 parent_select = np.random.randint(0, len(parent_col))
                 child.append(parent_col[parent_select])
             children.append(child)
+        # add in one average row
+        child_avg = []
+        for j, _key in enumerate(self.sorted_keys):
+            parent_col = [_[j] for _ in parents]
+            col_avg = np.mean(np.unique(parent_col))
+            if type(parent_col[0]) == int:
+                col_avg = int(col_avg)
+            child_avg.append(col_avg)
+
         self.best_parents.extend(children)
         
     
-    def mutation(self, prob_mutation):
+    def mutation(self, prob_mutation, leaveout_bp=True):
         parents = self.best_parents
-        for parent in parents:
+        # Mask to make sure the best 2 parents are excluded from mutation
+        for parent in parents[2::]:
             for j, _key in enumerate(self.sorted_keys):
                 mute = np.random.rand()
                 if mute < prob_mutation:
@@ -179,9 +191,9 @@ garesult_filename = "./ga_log.csv"
 if os.path.exists(garesult_filename):
     os.remove(garesult_filename)
 
-space = {"learning_rate": np.logspace(-4, 0, num=10),
-    "num_nodes": np.linspace(10, 50, 10, dtype=int), 
-    "num_layers": np.linspace(2, 10, 10, dtype=int), 
+space = {"learning_rate": np.logspace(-4, 0, num=15),
+    "num_nodes": np.linspace(10, 50, 15, dtype=int), 
+    "num_layers": np.linspace(2, 10, 15, dtype=int), 
 }
 
 np.random.seed(0)

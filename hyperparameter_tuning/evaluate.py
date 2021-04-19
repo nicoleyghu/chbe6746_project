@@ -18,7 +18,7 @@ def split_train_test(input_filename, train_ratio, save=False, filenames=None):
     if save is True:
         ase.io.write(filenames[0], training_list)
         ase.io.write(filenames[1], test_list)
-    return training_list, test_list\
+    return training_list, test_list
 
 def generate_random_idx(total_length, sample_length):
     return_list = random.sample(range(0, total_length), sample_length)
